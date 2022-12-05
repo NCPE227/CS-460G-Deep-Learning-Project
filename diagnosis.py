@@ -8,6 +8,4 @@
 # Dataset is available from the following link:
 # https://www.tensorflow.org/datasets/catalog/citrus_leaves
 
-from skimage import data, color
-
-import skimage
+import opencv
