@@ -8,31 +8,76 @@
 # Dataset is available from the following link:
 # https://www.tensorflow.org/datasets/catalog/citrus_leaves
 
-import glob #used to get a list of all the files in a folder
-from cv2 import imread, imwrite, resize, IMREAD_UNCHANGED #select the tools we need process our images
+import glob # used to get a list of all the files in a folder
+from cv2 import imread, resize, IMREAD_UNCHANGED # select the tools we need process our images
 
-images = list()
-black_spot_resized = list()
-canker_resized = list()
-greening_resized = list()
-healthy_resized = list()
-melanose_resized = list()
+# Lists to use for the output of the temporarily resized images
+black_spot = list()
+canker = list()
+greening = list()
+healthy = list()
+melanose = list()
 
-#Shrink image aspect ratio to improve runtime, test multiple epochs to find satisfactory metrics
+# We meed to shrink image aspect ratio to improve runtime, and will test multiple epochs to find satisfactory metrics
 
-new_dimension = 8 #we can just treat images as squared, setting their new pixel dimensions using a single variable
+# When this function is run, it resizes all 5 image sets to a given square aspect ratio, doesn't write the images, but keeps them in a list
+def Resize_Images(new_dimension):
+    images = list()
+    black_spot_resized = list()
+    canker_resized = list()
+    greening_resized = list()
+    healthy_resized = list()
+    melanose_resized = list()
 
-#Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
-images = glob.glob('./Citrus/Leaves/Black spot/*.png') #get the names files in the Black spot folder as a list
+    #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
+    images = glob.glob('./Citrus/Leaves/Black spot/*.png') #get the names files in the Black spot folder as a list
 
-for image in images:
-    source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-    dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
-    resized_image = resize(source_image, dimension_size) #change the dimensions of the image
-    black_spot_resized.append(resized_image) #add the new temporary images to a list
+    for image in images: #resize black spot images
+        source_image = imread(image, IMREAD_UNCHANGED) #set the source image
+        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        black_spot_resized.append(resized_image) #add the new temporary images to a list
 
+    #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
+    images = glob.glob('./Citrus/Leaves/canker/*.png') #get the names files in the Black spot folder as a list
 
-    
+    for image in images: #resize canker images
+        source_image = imread(image, IMREAD_UNCHANGED) #set the source image
+        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        canker_resized.append(resized_image) #add the new temporary images to a list
+
+    #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
+    images = glob.glob('./Citrus/Leaves/greening/*.png') #get the names files in the Black spot folder as a list
+
+    for image in images: #resize greening images
+        source_image = imread(image, IMREAD_UNCHANGED) #set the source image
+        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        greening_resized.append(resized_image) #add the new temporary images to a list
+
+    #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
+    images = glob.glob('./Citrus/Leaves/healthy/*.png') #get the names files in the Black spot folder as a list
+
+    for image in images: #resize healthy images
+        source_image = imread(image, IMREAD_UNCHANGED) #set the source image
+        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        healthy_resized.append(resized_image) #add the new temporary images to a list
+
+    #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
+    images = glob.glob('./Citrus/Leaves/Melanose/*.png') #get the names files in the Black spot folder as a list
+
+    for image in images: #resize melanose images
+        source_image = imread(image, IMREAD_UNCHANGED) #set the source image
+        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        melanose_resized.append(resized_image) #add the new temporary images to a list
+
+    return black_spot_resized, canker_resized, greening_resized, healthy_resized, melanose_resized #return all the lists
+
+# OpenCV (cv2) uses BGR rather than RGB orientation
+def BGR_Calculation():
 
 
 
