@@ -18,9 +18,8 @@ greening = list()
 healthy = list()
 melanose = list()
 
-master_images = list() #compiled after resizing to contain images from all sets
-
-# We meed to shrink image aspect ratio to improve runtime, and will test multiple epochs to find satisfactory metrics
+master_images = list() # compiled after resizing to contain images from all sets
+true_class = list() # a list of the true classifications of each image
 
 # When this function is run, it resizes all 5 image sets to a given square aspect ratio, doesn't write the images, but keeps them in a list
 def Resize_Images(new_dimension):
@@ -98,29 +97,81 @@ def BGR_Calculation(image_list, new_dimension):
     y_dimension = new_dimension
     pixel_colors = list() # temporary list for each pixel
     image_colors = list() # list of lists, each sublist contains the color predictions for the pixels of the given image
+    color_name = list() # list of color names that correspond to each pixel of each image
 
-    #For each image in the image_list, we are going to get the BGR values of each pixel in the image
+    # For each image in the image_list, we are going to get the BGR values of each pixel in the image
     for image in image_list:
         pixel_colors = [] #set the temp list back to empty
 
         # Calculate the BGR values for each pixel in the image
-        for pixel_y in y_dimension:
-            for pixel_x in x_dimension:
-                pixel_colors.append(image[pixel_x, pixel_y])
+        for pixel_y in range(y_dimension):
+            for pixel_x in range(x_dimension):
+                pixel_colors.append(image[pixel_x, pixel_y].tolist())
         
-        # needs if/else logic here to determine the color of a pixel based on a range of values in the BGR slots,
-        # from there, we just need to figure out an average color ratio for each class, which will be used to predict our values later
-        # once we have that, we should be able to validate and predict to our heart's content.
-        
-        # Now we need to decide what color each of those pixels are     
+        image_colors.append(pixel_colors) # add the list of arrays to a master list where each of these lists is an image
+    
+    # For each pixel in each image in image_colors, determine it's color by the BGR ratio
+    for image in image_colors:
+        temp_color_name = list() # use this to create a list for an individual image, then add the list to the color_name list
+        for pixel in image:
+            if ((pixel[2] > pixel[0]) & (pixel[2] > pixel[1])): # detect a brown pixel
+                temp_color_name.append('brown')
+            elif ((pixel[0] > pixel[1]) & (pixel[0] > pixel[2])): # detect the background of an image
+                temp_color_name.append('background')
+            elif ((pixel[1] > pixel[0]) & (pixel[1] > pixel[2])): # detect a green pixel
+                temp_color_name.append('green')
+            elif ((pixel[0] > pixel[2]) & (pixel[1] > pixel[2])): # detect a yellow pixel
+                temp_color_name.append('yellow')
+        color_name.append(temp_color_name) # add the temp list to this so we have a list of lists which corresponds with the pixels in the image_colors list of lists
+    #print(color_name)
 
-
+    # Count the appearances of each of the leaf colors, ignoring the background colors
+    green, brown, yellow = 0, 0, 0 # color counting variables
+    for image in color_name:
+        for color in image:
+            #print(color)
+            if color == 'green':
+                green += 1
+            elif color == 'brown':
+                brown += 1
+            elif color == 'yellow':
+                yellow +=1
+    
+    #print('Green: ', green)
+    #print('Brown: ', brown)
+    #print('Yellow: ', yellow)
+            
     return
 
-# This function creates the master list of all the datasets
+# This function creates the master list of all the datasets and a list of their true classifications
 def Combine():
-    master_images.append(black_spot)
-    master_images.append(canker)
-    master_images.append(greening)
-    master_images.append(healthy)
-    master_images.append(melanose)
+    for each in black_spot:
+        master_images.append(black_spot[each])
+        true_class.append('Black Spot')
+    
+    for each in canker:
+        master_images.append(canker)
+        true_class.append('Canker')
+    
+    for each in greening:
+        master_images.append(greening)
+        true_class.append('Greening')
+    
+    for each in healthy:
+        master_images.append(healthy)
+        true_class.append('Healthy')
+    
+    for each in melanose:
+        master_images.append(melanose)
+        true_class.append('Melanose')
+
+#black_spot, canker, greening, healthy, melanose = Resize_Images(16)
+
+source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
+#print('Original Dimension: ', source_image.shape)
+resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
+#print('New Dimension: ', source_image.shape)
+black_spot.append(resized_image) #add the new temporary images to a list
+#print('Size of Black Spot List: ', len(black_spot_resized))
+BGR_Calculation(black_spot, 256)
+
