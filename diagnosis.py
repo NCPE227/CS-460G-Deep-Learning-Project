@@ -175,10 +175,21 @@ def Combine_Lists():
         master_images.append(melanose[each].tolist())
         true_class.append('Melanose')
 
-black_spot, canker, greening, healthy, melanose = Resize_Images(256)
+black_spot, canker, greening, healthy, melanose = Resize_Images(256) # Resize images and set each of them to be compatible with OpenCV
+
+# Get the average representation of each of our identifier colors from the datasets, output is a list representing the average
+# presence of that color for the entire class represented by the list. This is in the form of [ green, brown, yellow ]
+black_spot_color_averages = BGR_Calculation(black_spot, 256)
+canker_color_averages = BGR_Calculation(canker, 256)
+greening_color_averages = BGR_Calculation(greening, 256)
+healthy_color_averages = BGR_Calculation(healthy, 256)
+melanose_color_averages = BGR_Calculation(melanose, 256)
+
+# Combine lists to make a master of the previous datasets in order to split into training and testing data.
 Combine_Lists()
 
-print(master_images)
+#Simply for proof of run, this makes it take a LONG TIME, leave commented out for real runs.
+#print(master_images)
 
 '''#Testing using a single image
 source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
