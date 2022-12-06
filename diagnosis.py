@@ -29,30 +29,40 @@ def Resize_Images(new_dimension):
     healthy_resized = list()
     melanose_resized = list()
 
+    dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+
     #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
     images = glob.glob('./Citrus/Leaves/Black spot/*.png') #get the names files in the Black spot folder as a list
 
     for image in images: #resize black spot images
+        image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        #print('New Dimension: ', source_image.shape)
         black_spot_resized.append(resized_image) #add the new temporary images to a list
+    #print('Size of Black Spot List: ', len(black_spot_resized))
 
     #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
     images = glob.glob('./Citrus/Leaves/canker/*.png') #get the names files in the Black spot folder as a list
-
+    #print(images)
     for image in images: #resize canker images
+        image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        print(source_image)
+        #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
+        #print('New Dimension: ', resized_image.shape)
         canker_resized.append(resized_image) #add the new temporary images to a list
+    #print('Size of canker List: ', len(black_spot_resized))
 
     #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
     images = glob.glob('./Citrus/Leaves/greening/*.png') #get the names files in the Black spot folder as a list
 
     for image in images: #resize greening images
+        image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
         greening_resized.append(resized_image) #add the new temporary images to a list
 
@@ -60,8 +70,9 @@ def Resize_Images(new_dimension):
     images = glob.glob('./Citrus/Leaves/healthy/*.png') #get the names files in the Black spot folder as a list
 
     for image in images: #resize healthy images
+        image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
         healthy_resized.append(resized_image) #add the new temporary images to a list
 
@@ -69,16 +80,35 @@ def Resize_Images(new_dimension):
     images = glob.glob('./Citrus/Leaves/Melanose/*.png') #get the names files in the Black spot folder as a list
 
     for image in images: #resize melanose images
+        image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        dimension_size = (new_dimension, new_dimension) #set dimensions_size to be new_dimension pixels in height and width
+        #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
         melanose_resized.append(resized_image) #add the new temporary images to a list
 
     return black_spot_resized, canker_resized, greening_resized, healthy_resized, melanose_resized #return all the lists
 
 # OpenCV (cv2) uses BGR rather than RGB orientation
-def BGR_Calculation():
+# Use each of the images in the list to calculate the RGB values of each pixel using the OpenCV (cv2) library
+# then use the same new_dimension value from Resize_Images to allow it to check each pixel since we have a square Aspect Ratio
+def BGR_Calculation(image_list, new_dimension):
+    x_dimension = new_dimension
+    y_dimension = new_dimension
+    pixel_colors = list() # temporary list for each pixel
+    image_colors = list() # list of lists, each sublist contains the color predictions for the pixels of the given image
+
+    #For each image in the image_list, we are going to get the BGR values of each pixel in the image
+    for image in image_list:
+        pixel_colors = [] #set the temp list back to empty
+
+        # Calculate the BGR values for each pixel in the image
+        for pixel_y in y_dimension:
+            for pixel_x in x_dimension:
+                pixel_colors.append(image[pixel_x,pixel_y])
+        
+        # Now we need to decide what color each of those pixels are     
 
 
+    return
 
-
+Resize_Images(8)
