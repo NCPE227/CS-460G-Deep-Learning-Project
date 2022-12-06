@@ -20,6 +20,7 @@ melanose = list()
 
 master_images = list() # compiled after resizing to contain images from all sets
 master_colors = list() # same as master images but each pixel is a string name for its color instead of a BGR component list
+master_file_names = list() # contains the names of the files in their appropriate order
 true_class = list() # a list of the true classifications of each image
 
 # When this function is run, it resizes all 5 image sets to a given square aspect ratio, doesn't write the images, but keeps them in a list
@@ -159,26 +160,31 @@ def Combine_Lists():
     for each in range(len(black_spot)):
         master_images.append(black_spot[each].tolist())
         master_colors.append(black_spot_pixels_as_color[each])
+        master_file_names.append(f'b{each}.png')
         true_class.append('Black Spot')
     
     for each in range(len(canker)):
         master_images.append(canker[each].tolist())
         master_colors.append(canker_pixels_as_color[each])
+        master_file_names.append(f'c{each}.png')
         true_class.append('Canker')
     
     for each in range(len(greening)):
         master_images.append(greening[each].tolist())
         master_colors.append(greening_pixels_as_color[each])
+        master_file_names.append(f'g{each}.png')
         true_class.append('Greening')
     
     for each in range(len(healthy)):
         master_images.append(healthy[each].tolist())
         master_colors.append(healthy_pixels_as_color[each])
+        master_file_names.append(f'h{each}.png')
         true_class.append('Healthy')
     
     for each in range(len(melanose)):
         master_images.append(melanose[each].tolist())
         master_colors.append(melanose_pixels_as_color[each])
+        master_file_names.append(f'm{each}.png')
         true_class.append('Melanose')
 
 dimension = 8 # lowered for quicker testing 
