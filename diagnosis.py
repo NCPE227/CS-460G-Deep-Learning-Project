@@ -160,19 +160,19 @@ def Combine_Lists():
         true_class.append('Black Spot')
     
     for each in canker:
-        master_images.append(canker)
+        master_images.append(canker[each])
         true_class.append('Canker')
     
     for each in greening:
-        master_images.append(greening)
+        master_images.append(greening[each])
         true_class.append('Greening')
     
     for each in healthy:
-        master_images.append(healthy)
+        master_images.append(healthy[each])
         true_class.append('Healthy')
     
     for each in melanose:
-        master_images.append(melanose)
+        master_images.append(melanose[each])
         true_class.append('Melanose')
 
 #black_spot, canker, greening, healthy, melanose = Resize_Images(16)
