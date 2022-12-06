@@ -155,29 +155,32 @@ def BGR_Calculation(image_list, new_dimension):
 
 # This function creates the master list of all the datasets and a list of their true classifications
 def Combine_Lists():
-    for each in black_spot:
-        master_images.append(black_spot[each])
+    for each in range(len(black_spot)):
+        master_images.append(black_spot[each].tolist())
         true_class.append('Black Spot')
     
-    for each in canker:
-        master_images.append(canker)
+    for each in range(len(canker)):
+        master_images.append(canker[each].tolist())
         true_class.append('Canker')
     
-    for each in greening:
-        master_images.append(greening)
+    for each in range(len(greening)):
+        master_images.append(greening[each].tolist())
         true_class.append('Greening')
     
-    for each in healthy:
-        master_images.append(healthy)
+    for each in range(len(healthy)):
+        master_images.append(healthy[each].tolist())
         true_class.append('Healthy')
     
-    for each in melanose:
-        master_images.append(melanose)
+    for each in range(len(melanose)):
+        master_images.append(melanose[each].tolist())
         true_class.append('Melanose')
 
-#black_spot, canker, greening, healthy, melanose = Resize_Images(16)
+black_spot, canker, greening, healthy, melanose = Resize_Images(256)
+Combine_Lists()
 
-#Testing using a single image
+print(master_images)
+
+'''#Testing using a single image
 source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
 #print('Original Dimension: ', source_image.shape)
 resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
@@ -221,6 +224,6 @@ resized_image = resize(source_image, (256, 256)) #change the dimensions of the i
 melanose.append(resized_image) #add the new temporary images to a list
 #print('Size of Black Spot List: ', len(black_spot_resized))
 average_occurences = BGR_Calculation(melanose, 256)
-print('Melanose Average: ', average_occurences)
+print('Melanose Average: ', average_occurences)'''
 
 
