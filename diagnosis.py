@@ -18,6 +18,8 @@ greening = list()
 healthy = list()
 melanose = list()
 
+master_images = list() #compiled after resizing to contain images from all sets
+
 # We meed to shrink image aspect ratio to improve runtime, and will test multiple epochs to find satisfactory metrics
 
 # When this function is run, it resizes all 5 image sets to a given square aspect ratio, doesn't write the images, but keeps them in a list
@@ -45,11 +47,11 @@ def Resize_Images(new_dimension):
 
     #Get a list of the images in the given directory, then for each of those images, make a temporary file of that image with a new aspect ratio
     images = glob.glob('./Citrus/Leaves/canker/*.png') #get the names files in the Black spot folder as a list
-    #print(images)
+ 
     for image in images: #resize canker images
         image = image.replace('\\', '/')
         source_image = imread(image, IMREAD_UNCHANGED) #set the source image
-        print(source_image)
+        #print(source_image)
         #print('Original Dimension: ', source_image.shape)
         resized_image = resize(source_image, dimension_size) #change the dimensions of the image
         #print('New Dimension: ', resized_image.shape)
@@ -89,8 +91,8 @@ def Resize_Images(new_dimension):
     return black_spot_resized, canker_resized, greening_resized, healthy_resized, melanose_resized #return all the lists
 
 # OpenCV (cv2) uses BGR rather than RGB orientation
-# Use each of the images in the list to calculate the RGB values of each pixel using the OpenCV (cv2) library
-# then use the same new_dimension value from Resize_Images to allow it to check each pixel since we have a square Aspect Ratio
+# Use the BGR values of the pixels in our images post-scaling to determine the color of each pixel, then get a ratio of the colors of each image
+# which we will use as our basis for predicting which condition the image depicts.
 def BGR_Calculation(image_list, new_dimension):
     x_dimension = new_dimension
     y_dimension = new_dimension
@@ -104,11 +106,21 @@ def BGR_Calculation(image_list, new_dimension):
         # Calculate the BGR values for each pixel in the image
         for pixel_y in y_dimension:
             for pixel_x in x_dimension:
-                pixel_colors.append(image[pixel_x,pixel_y])
+                pixel_colors.append(image[pixel_x, pixel_y])
+        
+        # needs if/else logic here to determine the color of a pixel based on a range of values in the BGR slots,
+        # from there, we just need to figure out an average color ratio for each class, which will be used to predict our values later
+        # once we have that, we should be able to validate and predict to our heart's content.
         
         # Now we need to decide what color each of those pixels are     
 
 
     return
 
-Resize_Images(8)
+# This function creates the master list of all the datasets
+def Combine():
+    master_images.append(black_spot)
+    master_images.append(canker)
+    master_images.append(greening)
+    master_images.append(healthy)
+    master_images.append(melanose)
