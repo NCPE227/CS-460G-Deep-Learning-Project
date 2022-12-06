@@ -92,6 +92,8 @@ def Resize_Images(new_dimension):
 # OpenCV (cv2) uses BGR rather than RGB orientation
 # Use the BGR values of the pixels in our images post-scaling to determine the color of each pixel, then get a ratio of the colors of each image
 # which we will use as our basis for predicting which condition the image depicts.
+#
+# Returns a list of the average occurence of colors per each condition. We will use this for predictions
 def BGR_Calculation(image_list, new_dimension):
     x_dimension = new_dimension
     y_dimension = new_dimension
@@ -127,6 +129,7 @@ def BGR_Calculation(image_list, new_dimension):
 
     # Count the appearances of each of the leaf colors, ignoring the background colors
     green, brown, yellow = 0, 0, 0 # color counting variables
+    average_green, average_yellow, average_brown = 0, 0, 0
     for image in color_name:
         for color in image:
             #print(color)
@@ -136,15 +139,22 @@ def BGR_Calculation(image_list, new_dimension):
                 brown += 1
             elif color == 'yellow':
                 yellow +=1
+        # Add the counted values for this image to the average variable
+        average_green += green
+        average_brown += brown
+        average_yellow += yellow
     
-    #print('Green: ', green)
-    #print('Brown: ', brown)
-    #print('Yellow: ', yellow)
+    # Divide each category by the number of items in color_name to get an average color value for each class
+    average_green = average_green / len(color_name)
+    average_brown = average_brown / len(color_name)
+    average_yellow = average_yellow / len(color_name)
+
+    average_colors = [average_green, average_brown, average_yellow] # create a variable to store the averages to be returned
             
-    return
+    return average_colors
 
 # This function creates the master list of all the datasets and a list of their true classifications
-def Combine():
+def Combine_Lists():
     for each in black_spot:
         master_images.append(black_spot[each])
         true_class.append('Black Spot')
@@ -167,11 +177,50 @@ def Combine():
 
 #black_spot, canker, greening, healthy, melanose = Resize_Images(16)
 
+#Testing using a single image
 source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
 #print('Original Dimension: ', source_image.shape)
 resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
 #print('New Dimension: ', source_image.shape)
 black_spot.append(resized_image) #add the new temporary images to a list
 #print('Size of Black Spot List: ', len(black_spot_resized))
-BGR_Calculation(black_spot, 256)
+average_occurences = BGR_Calculation(black_spot, 256)
+print('Black Spot Average: ', average_occurences)
+
+source_image = imread('./Citrus/Leaves/canker/c0.png', IMREAD_UNCHANGED) #set the source image
+#print('Original Dimension: ', source_image.shape)
+resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
+#print('New Dimension: ', source_image.shape)
+canker.append(resized_image) #add the new temporary images to a list
+#print('Size of Black Spot List: ', len(black_spot_resized))
+average_occurences = BGR_Calculation(canker, 256)
+print('Canker Average: ', average_occurences)
+
+source_image = imread('./Citrus/Leaves/greening/g0.png', IMREAD_UNCHANGED) #set the source image
+#print('Original Dimension: ', source_image.shape)
+resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
+#print('New Dimension: ', source_image.shape)
+greening.append(resized_image) #add the new temporary images to a list
+#print('Size of Black Spot List: ', len(black_spot_resized))
+average_occurences = BGR_Calculation(greening, 256)
+print('Greening Average: ', average_occurences)
+
+source_image = imread('./Citrus/Leaves/healthy/h0.png', IMREAD_UNCHANGED) #set the source image
+#print('Original Dimension: ', source_image.shape)
+resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
+#print('New Dimension: ', source_image.shape)
+healthy.append(resized_image) #add the new temporary images to a list
+#print('Size of Black Spot List: ', len(black_spot_resized))
+average_occurences = BGR_Calculation(healthy, 256)
+print('Healthy Average: ', average_occurences)
+
+source_image = imread('./Citrus/Leaves/Melanose/m0.png', IMREAD_UNCHANGED) #set the source image
+#print('Original Dimension: ', source_image.shape)
+resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
+#print('New Dimension: ', source_image.shape)
+melanose.append(resized_image) #add the new temporary images to a list
+#print('Size of Black Spot List: ', len(black_spot_resized))
+average_occurences = BGR_Calculation(melanose, 256)
+print('Melanose Average: ', average_occurences)
+
 
