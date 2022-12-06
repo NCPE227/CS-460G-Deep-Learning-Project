@@ -19,6 +19,7 @@ healthy = list()
 melanose = list()
 
 master_images = list() # compiled after resizing to contain images from all sets
+master_colors = list() # same as master images but each pixel is a string name for its color instead of a BGR component list
 true_class = list() # a list of the true classifications of each image
 
 # When this function is run, it resizes all 5 image sets to a given square aspect ratio, doesn't write the images, but keeps them in a list
@@ -151,45 +152,55 @@ def BGR_Calculation(image_list, new_dimension):
 
     average_colors = [average_green, average_brown, average_yellow] # create a variable to store the averages to be returned
             
-    return average_colors
+    return average_colors, color_name
 
 # This function creates the master list of all the datasets and a list of their true classifications
 def Combine_Lists():
     for each in range(len(black_spot)):
         master_images.append(black_spot[each].tolist())
+        master_colors.append(black_spot_pixels_as_color[each])
         true_class.append('Black Spot')
     
     for each in range(len(canker)):
         master_images.append(canker[each].tolist())
+        master_colors.append(canker_pixels_as_color[each])
         true_class.append('Canker')
     
     for each in range(len(greening)):
         master_images.append(greening[each].tolist())
+        master_colors.append(greening_pixels_as_color[each])
         true_class.append('Greening')
     
     for each in range(len(healthy)):
         master_images.append(healthy[each].tolist())
+        master_colors.append(healthy_pixels_as_color[each])
         true_class.append('Healthy')
     
     for each in range(len(melanose)):
         master_images.append(melanose[each].tolist())
+        master_colors.append(melanose_pixels_as_color[each])
         true_class.append('Melanose')
 
-black_spot, canker, greening, healthy, melanose = Resize_Images(256) # Resize images and set each of them to be compatible with OpenCV
+dimension = 8 # lowered for quicker testing 
+
+black_spot, canker, greening, healthy, melanose = Resize_Images(dimension) # Resize images and set each of them to be compatible with OpenCV
 
 # Get the average representation of each of our identifier colors from the datasets, output is a list representing the average
-# presence of that color for the entire class represented by the list. This is in the form of [ green, brown, yellow ]
-black_spot_color_averages = BGR_Calculation(black_spot, 256)
-canker_color_averages = BGR_Calculation(canker, 256)
-greening_color_averages = BGR_Calculation(greening, 256)
-healthy_color_averages = BGR_Calculation(healthy, 256)
-melanose_color_averages = BGR_Calculation(melanose, 256)
+# presence of that color for the entire class represented by the list. This is in the form of [ green, brown, yellow ]. It also returns
+# a list of each image where all the pixels have been converted to their color names
+black_spot_color_averages, black_spot_pixels_as_color = BGR_Calculation(black_spot, dimension)
+canker_color_averages, canker_pixels_as_color = BGR_Calculation(canker, dimension)
+greening_color_averages, greening_pixels_as_color = BGR_Calculation(greening, dimension)
+healthy_color_averages, healthy_pixels_as_color = BGR_Calculation(healthy, dimension)
+melanose_color_averages, melanose_pixels_as_color = BGR_Calculation(melanose, dimension)
 
 # Combine lists to make a master of the previous datasets in order to split into training and testing data.
 Combine_Lists()
 
 #Simply for proof of run, this makes it take a LONG TIME, leave commented out for real runs.
 #print(master_images)
+#print(master_colors[0])
+#print(len(master_colors[0]))
 
 '''#Testing using a single image
 source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
