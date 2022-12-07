@@ -158,36 +158,36 @@ def BGR_Calculation(image_list, new_dimension):
 # This function creates the master list of all the datasets and a list of their true classifications
 def Combine_Lists():
     for each in range(len(black_spot)):
-        master_images.append(black_spot[each].tolist())
+        master_images.append(black_spot[each])
         master_colors.append(black_spot_pixels_as_color[each])
         master_file_names.append(f'b{each}.png')
         true_class.append('Black Spot')
     
     for each in range(len(canker)):
-        master_images.append(canker[each].tolist())
+        master_images.append(canker[each])
         master_colors.append(canker_pixels_as_color[each])
         master_file_names.append(f'c{each}.png')
         true_class.append('Canker')
     
     for each in range(len(greening)):
-        master_images.append(greening[each].tolist())
+        master_images.append(greening[each])
         master_colors.append(greening_pixels_as_color[each])
         master_file_names.append(f'g{each}.png')
         true_class.append('Greening')
     
     for each in range(len(healthy)):
-        master_images.append(healthy[each].tolist())
+        master_images.append(healthy[each])
         master_colors.append(healthy_pixels_as_color[each])
         master_file_names.append(f'h{each}.png')
         true_class.append('Healthy')
     
     for each in range(len(melanose)):
-        master_images.append(melanose[each].tolist())
+        master_images.append(melanose[each])
         master_colors.append(melanose_pixels_as_color[each])
         master_file_names.append(f'm{each}.png')
         true_class.append('Melanose')
 
-dimension = 8 # lowered for quicker testing 
+dimension = 4 # lowered for quicker testing 
 
 black_spot, canker, greening, healthy, melanose = Resize_Images(dimension) # Resize images and set each of them to be compatible with OpenCV
 
@@ -202,9 +202,12 @@ melanose_color_averages, melanose_pixels_as_color = BGR_Calculation(melanose, di
 
 # Combine lists to make a master of the previous datasets in order to split into training and testing data.
 Combine_Lists()
+#print(black_spot[0])
 
 #Simply for proof of run, this makes it take a LONG TIME, leave commented out for real runs.
-#print(master_images)
+#print(master_images[0])
+#print()
+#print(master_images[1])
 #print(master_colors[0])
 #print(len(master_colors[0]))
 
