@@ -1,4 +1,4 @@
-# Authors: Noah Perry
+# Authors: 
 
 # Description: Use deep learning principles on a dataset of your choosing. We chose a dataset of citrus leaves with afflictions,
 # as well as healthy leaves for comparison. We will be using these images to predict which conditions (greening, black spot, canker, healthy)
@@ -242,7 +242,6 @@ def CNN(images, labels, dimension, LR, target):
     net = regression(net, learning_rate = LR, loss ='categorical_crossentropy', name ='targets')
   
     model = tflearn.DNN(net, tensorboard_dir ='log')
-    
 
     # Splitting the testing data and training data
     size = len(train_data)
@@ -258,11 +257,13 @@ def CNN(images, labels, dimension, LR, target):
 
     # epoch = 5 taken
     model.fit({'input': X}, {'targets': Y}, n_epoch = 5, 
-    validation_set =({'input': test_x}, {'targets': test_y}), 
+    validation_set = ({'input': test_x}, {'targets': test_y}), 
     snapshot_step = 500, show_metric = True, run_id = MODEL_NAME)
-    #model.save(MODEL_NAME, tensorboard_dir ='log') 
+    #model.save(MODEL_NAME, tensorboard_dir ='log')
 
-    return model
+    predicted = model.predict(test_x)
+
+    return predicted
 
 # This function creates the master list of all the datasets and a list of their true classifications
 def Combine_Lists():
@@ -314,3 +315,5 @@ melanose_color_averages, melanose_pixels_as_color = BGR_Calculation(melanose, di
 Combine_Lists()
 
 test_melanose = CNN(melanose, true_class, dimension, LR, 'Healthy')
+
+print(test_melanose)
