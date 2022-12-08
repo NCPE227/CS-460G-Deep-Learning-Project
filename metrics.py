@@ -13,16 +13,15 @@ import numpy
 from sklearn import metrics
 
 #confusion matrix = predicted vs actual... Accuracy = (true+ + true-)/totalsample
-actual = numpy.random.binomial(1,.9,size = 1000)
-predictions = numpy.random.binomial(1,.9,size = 1000)
+actual = test_y
+predictions = model.predict_classes(test_x, verbose=0)
+predictions = predictions[:,0]
 
 confusionmatrix = metrics.confusion_matrix(actual, predictions)
 
 display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusionmatrix, display_labels = [False, True])
 print("Confusion Matrix")
-print("   FF FT")
 print(confusionmatrix)
-print("   TF TT")
 
 #accuracy=(number of correct predictions)/(total number of predictions made)
 print("Accuracy: %.3f" % accuracy_score(actual, predictions))
