@@ -1,4 +1,4 @@
-# Authors:
+# Authors: Noah Perry
 
 # Description: Use deep learning principles on a dataset of your choosing. We chose a dataset of citrus leaves with afflictions,
 # as well as healthy leaves for comparison. We will be using these images to predict which conditions (greening, black spot, canker, healthy)
@@ -10,6 +10,18 @@
 
 import glob # used to get a list of all the files in a folder
 from cv2 import imread, resize, IMREAD_UNCHANGED # select the tools we need process our images
+from random import shuffle
+from math import floor
+from cv2 import cvtColor, COLOR_BGR2GRAY #COLOR_BGR2HSV 
+import numpy as np
+import tflearn
+from tflearn.layers.conv import conv_2d, max_pool_2d
+from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.estimator import regression
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from math import sqrt
+from sklearn import metrics
 
 # Lists to use for the output of the temporarily resized images
 black_spot = list()
@@ -155,6 +167,103 @@ def BGR_Calculation(image_list, new_dimension):
             
     return average_colors, color_name
 
+# This function contains everything needed to run the CNN algorithm
+def CNN(images, labels, dimension, LR, target):
+
+    MODEL_NAME = 'testing-{}-{}.model'.format(LR, '6conv-basic')
+    
+    #one-hot encode the labels of the images [b,c,g,h,m]
+    encoded_class = list()
+    if target == 'Black Spot':
+        for each in labels:
+            if each == 'Black Spot':
+                encoded_class.append([1,0])
+            else:
+                encoded_class.append([0,1])
+    elif target == 'Canker':
+        for each in labels:
+            if each == 'Canker':
+                encoded_class.append([1,0])
+            else:
+                encoded_class.append([0,1])
+    elif target == 'Greening':
+        for each in labels:
+            if each == 'Greening':
+                encoded_class.append([1,0])
+            else:
+                encoded_class.append([0,1])
+    else:
+        for each in labels:
+            if each == 'Healthy':
+                encoded_class.append([1,0])
+            else:
+                encoded_class.append([0,1])
+
+    #convert images to grayscale to simplify problem
+    for index in range(len(images)):
+        #print(len(images[index][0][0]))
+        images[index] = cvtColor(images[index], COLOR_BGR2GRAY)
+   
+    #combine labels and images into one list and shuffle
+    data = list()
+    for index in range(len(images)):
+        data.append([np.array(images[index]),np.array(encoded_class[index])])
+    shuffle(data)
+    
+    train_data = data[:550]
+    test_data = data[550:]
+    
+    for index in range(len(test_data)):
+        test_data[index][1] = index
+
+
+    #create layers of neural network
+    net = input_data(shape =[None, dimension, dimension, 1], name ='input')
+    
+    net = conv_2d(net, 32, 5, activation ='relu')
+    net = max_pool_2d(net, 5)
+  
+    net = conv_2d(net, 64, 5, activation ='relu')
+    net = max_pool_2d(net, 5)
+  
+    net = conv_2d(net, 128, 5, activation ='relu')
+    net = max_pool_2d(net, 5)
+  
+    net = conv_2d(net, 64, 5, activation ='relu')
+    net = max_pool_2d(net, 5)
+
+    net = conv_2d(net, 32, 5, activation ='relu')
+    net = max_pool_2d(net, 5)
+  
+    net = fully_connected(net, 1024, activation ='relu')
+    net = dropout(net, 0.8)
+  
+    net = fully_connected(net, 2, activation ='softmax')
+    net = regression(net, learning_rate = LR, loss ='categorical_crossentropy', name ='targets')
+  
+    model = tflearn.DNN(net, tensorboard_dir ='log')
+    
+
+    # Splitting the testing data and training data
+    size = len(train_data)
+    split = floor(size*.8)
+    train = train_data[:split]
+    test = train_data[split:]
+    
+    # X-Features & Y-Labels
+    X = np.array([i[0] for i in train]).reshape(-1, dimension, dimension, 1)
+    Y = [i[1] for i in train]
+    test_x = np.array([i[0] for i in test]).reshape(-1, dimension, dimension, 1)
+    test_y = [i[1] for i in test]
+
+    # epoch = 5 taken
+    model.fit({'input': X}, {'targets': Y}, n_epoch = 5, 
+    validation_set =({'input': test_x}, {'targets': test_y}), 
+    snapshot_step = 500, show_metric = True, run_id = MODEL_NAME)
+    #model.save(MODEL_NAME, tensorboard_dir ='log') 
+
+    return model
+
 # This function creates the master list of all the datasets and a list of their true classifications
 def Combine_Lists():
     for each in range(len(black_spot)):
@@ -188,6 +297,7 @@ def Combine_Lists():
         true_class.append('Melanose')
 
 dimension = 4 # lowered for quicker testing 
+LR = 1e-3 # learn rate for the CNN algorithm
 
 black_spot, canker, greening, healthy, melanose = Resize_Images(dimension) # Resize images and set each of them to be compatible with OpenCV
 
@@ -202,59 +312,5 @@ melanose_color_averages, melanose_pixels_as_color = BGR_Calculation(melanose, di
 
 # Combine lists to make a master of the previous datasets in order to split into training and testing data.
 Combine_Lists()
-#print(black_spot[0])
 
-#Simply for proof of run, this makes it take a LONG TIME, leave commented out for real runs.
-#print(master_images[0])
-#print()
-#print(master_images[1])
-#print(master_colors[0])
-#print(len(master_colors[0]))
-
-'''#Testing using a single image
-source_image = imread('./Citrus/Leaves/Black spot/b0.png', IMREAD_UNCHANGED) #set the source image
-#print('Original Dimension: ', source_image.shape)
-resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
-#print('New Dimension: ', source_image.shape)
-black_spot.append(resized_image) #add the new temporary images to a list
-#print('Size of Black Spot List: ', len(black_spot_resized))
-average_occurences = BGR_Calculation(black_spot, 256)
-print('Black Spot Average: ', average_occurences)
-
-source_image = imread('./Citrus/Leaves/canker/c0.png', IMREAD_UNCHANGED) #set the source image
-#print('Original Dimension: ', source_image.shape)
-resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
-#print('New Dimension: ', source_image.shape)
-canker.append(resized_image) #add the new temporary images to a list
-#print('Size of Black Spot List: ', len(black_spot_resized))
-average_occurences = BGR_Calculation(canker, 256)
-print('Canker Average: ', average_occurences)
-
-source_image = imread('./Citrus/Leaves/greening/g0.png', IMREAD_UNCHANGED) #set the source image
-#print('Original Dimension: ', source_image.shape)
-resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
-#print('New Dimension: ', source_image.shape)
-greening.append(resized_image) #add the new temporary images to a list
-#print('Size of Black Spot List: ', len(black_spot_resized))
-average_occurences = BGR_Calculation(greening, 256)
-print('Greening Average: ', average_occurences)
-
-source_image = imread('./Citrus/Leaves/healthy/h0.png', IMREAD_UNCHANGED) #set the source image
-#print('Original Dimension: ', source_image.shape)
-resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
-#print('New Dimension: ', source_image.shape)
-healthy.append(resized_image) #add the new temporary images to a list
-#print('Size of Black Spot List: ', len(black_spot_resized))
-average_occurences = BGR_Calculation(healthy, 256)
-print('Healthy Average: ', average_occurences)
-
-source_image = imread('./Citrus/Leaves/Melanose/m0.png', IMREAD_UNCHANGED) #set the source image
-#print('Original Dimension: ', source_image.shape)
-resized_image = resize(source_image, (256, 256)) #change the dimensions of the image
-#print('New Dimension: ', source_image.shape)
-melanose.append(resized_image) #add the new temporary images to a list
-#print('Size of Black Spot List: ', len(black_spot_resized))
-average_occurences = BGR_Calculation(melanose, 256)
-print('Melanose Average: ', average_occurences)'''
-
-
+test_melanose = CNN(melanose, true_class, dimension, LR, 'Healthy')
